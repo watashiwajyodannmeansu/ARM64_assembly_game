@@ -55,18 +55,35 @@ main:
 	str x0, [sp, #0x20]
 	//calling open
 	bl _set_stack
+	adr x0, open
+	bl call
+	//storing fd
+	bl _set_heap
+	ldr x0, [sp]
+	bl _set_pages
+	str x0, [sp, #0x20]
+
+	//write 2
+	
+	//setting args
+	bl _set_heap
+	mov x0, _STDOUT
+	str x0, [sp], #0x10
+	ldr x0, =reading
+	str x0, [sp], #0x10
+	mov x0, reading_len
+	str x0, [sp]
+	//calling write
+	bl _set_stack
 	adr x0, write
 	bl call
-
-	//storing fd
-	
-	//write 2
 
 	//read 1
 
 	//setting args
+	bl _set_pages
+	ldr x0, [sp, #0x20]
 	bl _set_heap
-	mov x0, _STDIN
 	str x0, [sp], #0x10
 	ldr x0, =buf
 	str x0, [sp], #0x10
@@ -76,6 +93,11 @@ main:
 	bl _set_stack
 	adr x0, read
 	bl call
+	//storing number of bytes
+	bl _set_heap
+	ldr x0, [sp]
+	bl _set_pages
+	str x0, [sp, #0x40]
 
 	//write 3
 
@@ -83,9 +105,9 @@ main:
 	bl _set_heap
 	mov x0, _STDOUT
 	str x0, [sp], #0x10
-	ldr x0, =buf
+	ldr x0, =writing
 	str x0, [sp], #0x10
-	mov x0, buf_len
+	mov x0, writing_len
 	str x0, [sp]
 	//calling write
 	bl _set_stack
@@ -94,12 +116,27 @@ main:
 	
 	//write 4
 
+	//setting args
+	bl _set_heap
+	mov x0, _STDOUT
+	str x0, [sp], #0x10
+	ldr x0, =buf
+	str x0, [sp], #0x10
+	bl _set_pages
+	ldr x0, [sp, #0x40]
+	bl _set_heap
+	str x0, [sp, #0x20]
+	//calling write
+	bl _set_stack
+	adr x0, write
+	bl call
+
 	//close 1
 
+	bl _set_pages
+	ldr x0, [sp, #0x20]
 	bl _set_heap
-	ldr x0, pages
-	ldr x0, x0
-	str x0, sp
+	str x0, [sp]
 	//calling close
 	bl _set_stack
 	adr x0, close
