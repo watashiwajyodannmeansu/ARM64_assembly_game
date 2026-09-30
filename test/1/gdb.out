@@ -1,0 +1,5 @@
+Breakpoint 1 at 0x4000fc
+Breakpoint 2 at 0x40011c
+warning: bad breakpoint number at or near '0'
+test.gdb:10: Error in sourced command file:
+The program has no registers now.

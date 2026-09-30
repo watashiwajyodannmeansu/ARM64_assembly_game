@@ -1,0 +1,9 @@
+.equ	_svc_num_open, 56
+.equ	_svc_num_close, 57
+.equ	_svc_num_write, 64
+.equ	_src_num_pwrite, 67
+.equ	_svc_num_read, 63
+.equ	_svc_num_pread, 67
+.equ	_svc_num_lseek, 62
+.equ	_svc_num_exit, 93
+.equ	_svc_num_sigsend, 144

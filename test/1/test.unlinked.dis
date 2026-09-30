@@ -1,0 +1,244 @@
+
+test.unlinked:     file format elf64-littleaarch64
+
+
+Disassembly of section .text:
+
+0000000000000000 <_start_heap>:
+   0:	10000010 	adr	x16, 0 <_start_heap>
+   4:	d2800011 	mov	x17, #0x0                   	// #0
+   8:	10000012 	adr	x18, 0 <_start_heap>
+
+000000000000000c <_start_heap_loop>:
+   c:	f8008611 	str	x17, [x16], #8
+  10:	eb12021f 	cmp	x16, x18
+  14:	54ffffcd 	b.le	c <_start_heap_loop>
+  18:	d65f03c0 	ret
+
+000000000000001c <_set_heap>:
+  1c:	1000001d 	adr	x29, 0 <_start_heap>
+  20:	910003bf 	mov	sp, x29
+  24:	d65f03c0 	ret
+
+0000000000000028 <_set_stack>:
+  28:	1000001d 	adr	x29, 0 <_start_heap>
+  2c:	910003bf 	mov	sp, x29
+  30:	d65f03c0 	ret
+
+0000000000000034 <_start_stack>:
+  34:	10000010 	adr	x16, 0 <_start_heap>
+  38:	9100021f 	mov	sp, x16
+  3c:	910003f0 	mov	x16, sp
+  40:	d1004210 	sub	x16, x16, #0x10
+  44:	f90003f0 	str	x16, [sp]
+  48:	d65f03c0 	ret
+
+000000000000004c <call>:
+  4c:	f94003e1 	ldr	x1, [sp]
+  50:	d1004021 	sub	x1, x1, #0x10
+  54:	f90003e1 	str	x1, [sp]
+  58:	f900003e 	str	x30, [x1]
+  5c:	58000fe2 	ldr	x2, 258 <main+0xa8>
+  60:	eb02003f 	cmp	x1, x2
+  64:	5400000b 	b.lt	b4 <_stack_overflow>  // b.tstop
+  68:	d61f0000 	br	x0
+
+000000000000006c <return>:
+  6c:	f94003e1 	ldr	x1, [sp]
+  70:	f940003e 	ldr	x30, [x1]
+  74:	d2800000 	mov	x0, #0x0                   	// #0
+  78:	f9000020 	str	x0, [x1]
+  7c:	91004021 	add	x1, x1, #0x10
+  80:	910003e0 	mov	x0, sp
+  84:	eb00003f 	cmp	x1, x0
+  88:	5400000a 	b.ge	94 <_stack_underflow>  // b.tcont
+  8c:	f90003e1 	str	x1, [sp]
+  90:	d65f03c0 	ret
+
+0000000000000094 <_stack_underflow>:
+  94:	d2800040 	mov	x0, #0x2                   	// #2
+  98:	58000e41 	ldr	x1, 260 <main+0xb0>
+  9c:	d28003c2 	mov	x2, #0x1e                  	// #30
+  a0:	d2800808 	mov	x8, #0x40                  	// #64
+  a4:	d4000001 	svc	#0x0
+  a8:	d2800000 	mov	x0, #0x0                   	// #0
+  ac:	d2800161 	mov	x1, #0xb                   	// #11
+  b0:	14000000 	b	d4 <_stack_sigsend>
+
+00000000000000b4 <_stack_overflow>:
+  b4:	d2800040 	mov	x0, #0x2                   	// #2
+  b8:	58000d81 	ldr	x1, 268 <main+0xb8>
+  bc:	d28003a2 	mov	x2, #0x1d                  	// #29
+  c0:	d2800808 	mov	x8, #0x40                  	// #64
+  c4:	d4000001 	svc	#0x0
+  c8:	d2800000 	mov	x0, #0x0                   	// #0
+  cc:	d2800161 	mov	x1, #0xb                   	// #11
+  d0:	14000000 	b	d4 <_stack_sigsend>
+
+00000000000000d4 <_stack_sigsend>:
+  d4:	d2801208 	mov	x8, #0x90                  	// #144
+  d8:	d4000001 	svc	#0x0
+  dc:	d65f03c0 	ret
+
+00000000000000e0 <write>:
+  e0:	94000000 	bl	1c <_set_heap>
+  e4:	f84107e0 	ldr	x0, [sp], #16
+  e8:	f84107e1 	ldr	x1, [sp], #16
+  ec:	f94003e2 	ldr	x2, [sp]
+  f0:	94000000 	bl	1c <_set_heap>
+  f4:	d2800808 	mov	x8, #0x40                  	// #64
+  f8:	d4000001 	svc	#0x0
+  fc:	f80107e0 	str	x0, [sp], #16
+ 100:	f90003e1 	str	x1, [sp]
+ 104:	94000000 	bl	28 <_set_stack>
+ 108:	14000000 	b	6c <return>
+
+000000000000010c <read>:
+ 10c:	94000000 	bl	1c <_set_heap>
+ 110:	f84107e0 	ldr	x0, [sp], #16
+ 114:	f84107e1 	ldr	x1, [sp], #16
+ 118:	f94003e2 	ldr	x2, [sp]
+ 11c:	94000000 	bl	1c <_set_heap>
+ 120:	d28007e8 	mov	x8, #0x3f                  	// #63
+ 124:	d4000001 	svc	#0x0
+ 128:	f80107e0 	str	x0, [sp], #16
+ 12c:	f90003e1 	str	x1, [sp]
+ 130:	94000000 	bl	28 <_set_stack>
+ 134:	14000000 	b	6c <return>
+
+0000000000000138 <open>:
+ 138:	94000000 	bl	1c <_set_heap>
+ 13c:	f84107e0 	ldr	x0, [sp], #16
+ 140:	f84107e1 	ldr	x1, [sp], #16
+ 144:	f84107e2 	ldr	x2, [sp], #16
+ 148:	f94003e3 	ldr	x3, [sp]
+ 14c:	94000000 	bl	1c <_set_heap>
+ 150:	d2800708 	mov	x8, #0x38                  	// #56
+ 154:	d4000001 	svc	#0x0
+ 158:	f90003e0 	str	x0, [sp]
+ 15c:	94000000 	bl	28 <_set_stack>
+ 160:	14000000 	b	6c <return>
+
+0000000000000164 <close>:
+ 164:	f84107e0 	ldr	x0, [sp], #16
+ 168:	94000000 	bl	1c <_set_heap>
+ 16c:	d2800728 	mov	x8, #0x39                  	// #57
+ 170:	d4000001 	svc	#0x0
+ 174:	f90003e0 	str	x0, [sp]
+ 178:	94000000 	bl	28 <_set_stack>
+ 17c:	14000000 	b	6c <return>
+
+0000000000000180 <sigsend>:
+ 180:	94000000 	bl	1c <_set_heap>
+ 184:	f84107e0 	ldr	x0, [sp], #16
+ 188:	f94003e1 	ldr	x1, [sp]
+ 18c:	d2801208 	mov	x8, #0x90                  	// #144
+ 190:	d4000001 	svc	#0x0
+ 194:	94000000 	bl	28 <_set_stack>
+ 198:	14000000 	b	6c <return>
+
+000000000000019c <exit>:
+ 19c:	d2800ba8 	mov	x8, #0x5d                  	// #93
+ 1a0:	d4000001 	svc	#0x0
+
+00000000000001a4 <_start>:
+ 1a4:	94000000 	bl	34 <_start_stack>
+ 1a8:	94000000 	bl	0 <_start_heap>
+ 1ac:	14000000 	b	1b0 <main>
+
+00000000000001b0 <main>:
+ 1b0:	94000000 	bl	1c <_set_heap>
+ 1b4:	d2800020 	mov	x0, #0x1                   	// #1
+ 1b8:	f80107e0 	str	x0, [sp], #16
+ 1bc:	580005a0 	ldr	x0, 270 <main+0xc0>
+ 1c0:	f80107e0 	str	x0, [sp], #16
+ 1c4:	d28000e0 	mov	x0, #0x7                   	// #7
+ 1c8:	f90003e0 	str	x0, [sp]
+ 1cc:	94000000 	bl	28 <_set_stack>
+ 1d0:	10000000 	adr	x0, e0 <write>
+ 1d4:	94000000 	bl	4c <call>
+ 1d8:	94000000 	bl	1c <_set_heap>
+ 1dc:	d2800020 	mov	x0, #0x1                   	// #1
+ 1e0:	f80107e0 	str	x0, [sp], #16
+ 1e4:	580004a0 	ldr	x0, 278 <main+0xc8>
+ 1e8:	f80107e0 	str	x0, [sp], #16
+ 1ec:	d28001a0 	mov	x0, #0xd                   	// #13
+ 1f0:	f90003e0 	str	x0, [sp]
+ 1f4:	94000000 	bl	28 <_set_stack>
+ 1f8:	10000000 	adr	x0, e0 <write>
+ 1fc:	94000000 	bl	4c <call>
+ 200:	94000000 	bl	1c <_set_heap>
+ 204:	d2800040 	mov	x0, #0x2                   	// #2
+ 208:	f80107e0 	str	x0, [sp], #16
+ 20c:	580003a0 	ldr	x0, 280 <main+0xd0>
+ 210:	f80107e0 	str	x0, [sp], #16
+ 214:	d28000e0 	mov	x0, #0x7                   	// #7
+ 218:	f90003e0 	str	x0, [sp]
+ 21c:	94000000 	bl	28 <_set_stack>
+ 220:	10000000 	adr	x0, e0 <write>
+ 224:	94000000 	bl	4c <call>
+ 228:	94000000 	bl	1c <_set_heap>
+ 22c:	d2800040 	mov	x0, #0x2                   	// #2
+ 230:	f80107e0 	str	x0, [sp], #16
+ 234:	58000220 	ldr	x0, 278 <main+0xc8>
+ 238:	f80107e0 	str	x0, [sp], #16
+ 23c:	d28001a0 	mov	x0, #0xd                   	// #13
+ 240:	f90003e0 	str	x0, [sp]
+ 244:	94000000 	bl	28 <_set_stack>
+ 248:	10000000 	adr	x0, e0 <write>
+ 24c:	94000000 	bl	4c <call>
+ 250:	d2800000 	mov	x0, #0x0                   	// #0
+ 254:	14000000 	b	19c <exit>
+	...
+
+Disassembly of section .data:
+
+0000000000000000 <heap>:
+	...
+
+0000000000001000 <heap_end>:
+	...
+
+0000000000001010 <stack>:
+	...
+
+0000000000002010 <stack_end>:
+	...
+
+Disassembly of section .rodata:
+
+0000000000000000 <stack_overflow_msg>:
+   0:	63617453 	.inst	0x63617453 ; undefined
+   4:	766f206b 	.inst	0x766f206b ; undefined
+   8:	6c667265 	ldnp	d5, d28, [x19, #-416]
+   c:	6465776f 	.inst	0x6465776f ; undefined
+  10:	6973202c 	ldpsw	x12, x8, [x1, #-104]
+  14:	75616667 	.inst	0x75616667 ; undefined
+  18:	0a21746c 	bic	w12, w3, w1, lsl #29
+	...
+
+000000000000001d <stack_underflow_msg>:
+  1d:	63617453 	.inst	0x63617453 ; undefined
+  21:	6e75206b 	usubl2	v11.4s, v3.8h, v21.8h
+  25:	66726564 	.inst	0x66726564 ; undefined
+  29:	65776f6c 	fnmls	z12.h, p3/m, z27.h, z23.h
+  2d:	73202c64 	.inst	0x73202c64 ; undefined
+  31:	61666769 	.inst	0x61666769 ; undefined
+  35:	21746c75 	.inst	0x21746c75 ; undefined
+  39:	0000000a 	udf	#10
+  3d:	 	ubfx	w0, w0, #0, #1
+
+0000000000000040 <stdout>:
+  40:	4f445453 	shl	v19.2d, v2.2d, #4
+  44:	 	.inst	0x533b5455 ; undefined
+
+0000000000000047 <stderr>:
+  47:	45445453 	ssubwt	z19.h, z2.h, z4.b
+  4b:	 	.inst	0x483b5252 ; undefined
+
+000000000000004e <message>:
+  4e:	6c6c6548 	ldnp	d8, d25, [x10, #-320]
+  52:	57202c6f 	.inst	0x57202c6f ; undefined
+  56:	646c726f 	.inst	0x646c726f ; undefined
+  5a:	Address 0x5a is out of bounds.
+

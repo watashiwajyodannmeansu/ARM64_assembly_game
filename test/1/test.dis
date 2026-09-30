@@ -1,0 +1,255 @@
+
+test/1/test:     file format elf64-littleaarch64
+
+
+Disassembly of section .text:
+
+00000000004000b0 <_start_heap>:
+  4000b0:	10081790 	adr	x16, 4103a0 <heap>
+  4000b4:	d2800011 	mov	x17, #0x0                   	// #0
+  4000b8:	10089752 	adr	x18, 4113a0 <heap_end>
+
+00000000004000bc <_start_heap_loop>:
+  4000bc:	f8008611 	str	x17, [x16], #8
+  4000c0:	eb12021f 	cmp	x16, x18
+  4000c4:	54ffffcd 	b.le	4000bc <_start_heap_loop>
+  4000c8:	d65f03c0 	ret
+
+00000000004000cc <_set_heap>:
+  4000cc:	100816bd 	adr	x29, 4103a0 <heap>
+  4000d0:	910003bf 	mov	sp, x29
+  4000d4:	d65f03c0 	ret
+
+00000000004000d8 <_set_stack>:
+  4000d8:	100916dd 	adr	x29, 4123b0 <stack_end>
+  4000dc:	910003bf 	mov	sp, x29
+  4000e0:	d65f03c0 	ret
+
+00000000004000e4 <_start_stack>:
+  4000e4:	10091670 	adr	x16, 4123b0 <stack_end>
+  4000e8:	9100021f 	mov	sp, x16
+  4000ec:	910003f0 	mov	x16, sp
+  4000f0:	d1004210 	sub	x16, x16, #0x10
+  4000f4:	f90003f0 	str	x16, [sp]
+  4000f8:	d65f03c0 	ret
+
+00000000004000fc <call>:
+  4000fc:	f94003e1 	ldr	x1, [sp]
+  400100:	d1004021 	sub	x1, x1, #0x10
+  400104:	f90003e1 	str	x1, [sp]
+  400108:	f900003e 	str	x30, [x1]
+  40010c:	58000fe2 	ldr	x2, 400308 <main+0xa8>
+  400110:	eb02003f 	cmp	x1, x2
+  400114:	5400028b 	b.lt	400164 <_stack_overflow>  // b.tstop
+  400118:	d61f0000 	br	x0
+
+000000000040011c <return>:
+  40011c:	f94003e1 	ldr	x1, [sp]
+  400120:	f940003e 	ldr	x30, [x1]
+  400124:	d2800000 	mov	x0, #0x0                   	// #0
+  400128:	f9000020 	str	x0, [x1]
+  40012c:	91004021 	add	x1, x1, #0x10
+  400130:	910003e0 	mov	x0, sp
+  400134:	eb00003f 	cmp	x1, x0
+  400138:	5400006a 	b.ge	400144 <_stack_underflow>  // b.tcont
+  40013c:	f90003e1 	str	x1, [sp]
+  400140:	d65f03c0 	ret
+
+0000000000400144 <_stack_underflow>:
+  400144:	d2800040 	mov	x0, #0x2                   	// #2
+  400148:	58000e41 	ldr	x1, 400310 <main+0xb0>
+  40014c:	d28003c2 	mov	x2, #0x1e                  	// #30
+  400150:	d2800808 	mov	x8, #0x40                  	// #64
+  400154:	d4000001 	svc	#0x0
+  400158:	d2800000 	mov	x0, #0x0                   	// #0
+  40015c:	d2800161 	mov	x1, #0xb                   	// #11
+  400160:	14000009 	b	400184 <_stack_sigsend>
+
+0000000000400164 <_stack_overflow>:
+  400164:	d2800040 	mov	x0, #0x2                   	// #2
+  400168:	58000d81 	ldr	x1, 400318 <main+0xb8>
+  40016c:	d28003a2 	mov	x2, #0x1d                  	// #29
+  400170:	d2800808 	mov	x8, #0x40                  	// #64
+  400174:	d4000001 	svc	#0x0
+  400178:	d2800000 	mov	x0, #0x0                   	// #0
+  40017c:	d2800161 	mov	x1, #0xb                   	// #11
+  400180:	14000001 	b	400184 <_stack_sigsend>
+
+0000000000400184 <_stack_sigsend>:
+  400184:	d2801208 	mov	x8, #0x90                  	// #144
+  400188:	d4000001 	svc	#0x0
+  40018c:	d65f03c0 	ret
+
+0000000000400190 <write>:
+  400190:	97ffffcf 	bl	4000cc <_set_heap>
+  400194:	f84107e0 	ldr	x0, [sp], #16
+  400198:	f84107e1 	ldr	x1, [sp], #16
+  40019c:	f94003e2 	ldr	x2, [sp]
+  4001a0:	97ffffcb 	bl	4000cc <_set_heap>
+  4001a4:	d2800808 	mov	x8, #0x40                  	// #64
+  4001a8:	d4000001 	svc	#0x0
+  4001ac:	f80107e0 	str	x0, [sp], #16
+  4001b0:	f90003e1 	str	x1, [sp]
+  4001b4:	97ffffc9 	bl	4000d8 <_set_stack>
+  4001b8:	17ffffd9 	b	40011c <return>
+
+00000000004001bc <read>:
+  4001bc:	97ffffc4 	bl	4000cc <_set_heap>
+  4001c0:	f84107e0 	ldr	x0, [sp], #16
+  4001c4:	f84107e1 	ldr	x1, [sp], #16
+  4001c8:	f94003e2 	ldr	x2, [sp]
+  4001cc:	97ffffc0 	bl	4000cc <_set_heap>
+  4001d0:	d28007e8 	mov	x8, #0x3f                  	// #63
+  4001d4:	d4000001 	svc	#0x0
+  4001d8:	f80107e0 	str	x0, [sp], #16
+  4001dc:	f90003e1 	str	x1, [sp]
+  4001e0:	97ffffbe 	bl	4000d8 <_set_stack>
+  4001e4:	17ffffce 	b	40011c <return>
+
+00000000004001e8 <open>:
+  4001e8:	97ffffb9 	bl	4000cc <_set_heap>
+  4001ec:	f84107e0 	ldr	x0, [sp], #16
+  4001f0:	f84107e1 	ldr	x1, [sp], #16
+  4001f4:	f84107e2 	ldr	x2, [sp], #16
+  4001f8:	f94003e3 	ldr	x3, [sp]
+  4001fc:	97ffffb4 	bl	4000cc <_set_heap>
+  400200:	d2800708 	mov	x8, #0x38                  	// #56
+  400204:	d4000001 	svc	#0x0
+  400208:	f90003e0 	str	x0, [sp]
+  40020c:	97ffffb3 	bl	4000d8 <_set_stack>
+  400210:	17ffffc3 	b	40011c <return>
+
+0000000000400214 <close>:
+  400214:	f84107e0 	ldr	x0, [sp], #16
+  400218:	97ffffad 	bl	4000cc <_set_heap>
+  40021c:	d2800728 	mov	x8, #0x39                  	// #57
+  400220:	d4000001 	svc	#0x0
+  400224:	f90003e0 	str	x0, [sp]
+  400228:	97ffffac 	bl	4000d8 <_set_stack>
+  40022c:	17ffffbc 	b	40011c <return>
+
+0000000000400230 <sigsend>:
+  400230:	97ffffa7 	bl	4000cc <_set_heap>
+  400234:	f84107e0 	ldr	x0, [sp], #16
+  400238:	f94003e1 	ldr	x1, [sp]
+  40023c:	d2801208 	mov	x8, #0x90                  	// #144
+  400240:	d4000001 	svc	#0x0
+  400244:	97ffffa5 	bl	4000d8 <_set_stack>
+  400248:	17ffffb5 	b	40011c <return>
+
+000000000040024c <exit>:
+  40024c:	d2800ba8 	mov	x8, #0x5d                  	// #93
+  400250:	d4000001 	svc	#0x0
+
+0000000000400254 <_start>:
+  400254:	97ffffa4 	bl	4000e4 <_start_stack>
+  400258:	97ffff96 	bl	4000b0 <_start_heap>
+  40025c:	14000001 	b	400260 <main>
+
+0000000000400260 <main>:
+  400260:	97ffff9b 	bl	4000cc <_set_heap>
+  400264:	d2800020 	mov	x0, #0x1                   	// #1
+  400268:	f80107e0 	str	x0, [sp], #16
+  40026c:	580005a0 	ldr	x0, 400320 <main+0xc0>
+  400270:	f80107e0 	str	x0, [sp], #16
+  400274:	d28000e0 	mov	x0, #0x7                   	// #7
+  400278:	f90003e0 	str	x0, [sp]
+  40027c:	97ffff97 	bl	4000d8 <_set_stack>
+  400280:	10fff880 	adr	x0, 400190 <write>
+  400284:	97ffff9e 	bl	4000fc <call>
+  400288:	97ffff91 	bl	4000cc <_set_heap>
+  40028c:	d2800020 	mov	x0, #0x1                   	// #1
+  400290:	f80107e0 	str	x0, [sp], #16
+  400294:	580004a0 	ldr	x0, 400328 <main+0xc8>
+  400298:	f80107e0 	str	x0, [sp], #16
+  40029c:	d28001a0 	mov	x0, #0xd                   	// #13
+  4002a0:	f90003e0 	str	x0, [sp]
+  4002a4:	97ffff8d 	bl	4000d8 <_set_stack>
+  4002a8:	10fff740 	adr	x0, 400190 <write>
+  4002ac:	97ffff94 	bl	4000fc <call>
+  4002b0:	97ffff87 	bl	4000cc <_set_heap>
+  4002b4:	d2800040 	mov	x0, #0x2                   	// #2
+  4002b8:	f80107e0 	str	x0, [sp], #16
+  4002bc:	580003a0 	ldr	x0, 400330 <main+0xd0>
+  4002c0:	f80107e0 	str	x0, [sp], #16
+  4002c4:	d28000e0 	mov	x0, #0x7                   	// #7
+  4002c8:	f90003e0 	str	x0, [sp]
+  4002cc:	97ffff83 	bl	4000d8 <_set_stack>
+  4002d0:	10fff600 	adr	x0, 400190 <write>
+  4002d4:	97ffff8a 	bl	4000fc <call>
+  4002d8:	97ffff7d 	bl	4000cc <_set_heap>
+  4002dc:	d2800040 	mov	x0, #0x2                   	// #2
+  4002e0:	f80107e0 	str	x0, [sp], #16
+  4002e4:	58000220 	ldr	x0, 400328 <main+0xc8>
+  4002e8:	f80107e0 	str	x0, [sp], #16
+  4002ec:	d28001a0 	mov	x0, #0xd                   	// #13
+  4002f0:	f90003e0 	str	x0, [sp]
+  4002f4:	97ffff79 	bl	4000d8 <_set_stack>
+  4002f8:	10fff4c0 	adr	x0, 400190 <write>
+  4002fc:	97ffff80 	bl	4000fc <call>
+  400300:	d2800000 	mov	x0, #0x0                   	// #0
+  400304:	17ffffd2 	b	40024c <exit>
+  400308:	004113b0 	.inst	0x004113b0 ; undefined
+  40030c:	00000000 	udf	#0
+  400310:	0040035d 	.inst	0x0040035d ; undefined
+  400314:	00000000 	udf	#0
+  400318:	00400340 	.inst	0x00400340 ; undefined
+  40031c:	00000000 	udf	#0
+  400320:	00400380 	.inst	0x00400380 ; undefined
+  400324:	00000000 	udf	#0
+  400328:	0040038e 	.inst	0x0040038e ; undefined
+  40032c:	00000000 	udf	#0
+  400330:	00400387 	.inst	0x00400387 ; undefined
+  400334:	00000000 	udf	#0
+
+Disassembly of section .rodata:
+
+0000000000400340 <stack_overflow_msg>:
+  400340:	63617453 	.inst	0x63617453 ; undefined
+  400344:	766f206b 	.inst	0x766f206b ; undefined
+  400348:	6c667265 	ldnp	d5, d28, [x19, #-416]
+  40034c:	6465776f 	.inst	0x6465776f ; undefined
+  400350:	6973202c 	ldpsw	x12, x8, [x1, #-104]
+  400354:	75616667 	.inst	0x75616667 ; undefined
+  400358:	0a21746c 	bic	w12, w3, w1, lsl #29
+	...
+
+000000000040035d <stack_underflow_msg>:
+  40035d:	63617453 	.inst	0x63617453 ; undefined
+  400361:	6e75206b 	usubl2	v11.4s, v3.8h, v21.8h
+  400365:	66726564 	.inst	0x66726564 ; undefined
+  400369:	65776f6c 	fnmls	z12.h, p3/m, z27.h, z23.h
+  40036d:	73202c64 	.inst	0x73202c64 ; undefined
+  400371:	61666769 	.inst	0x61666769 ; undefined
+  400375:	21746c75 	.inst	0x21746c75 ; undefined
+  400379:	0000000a 	udf	#10
+  40037d:	 	ubfx	w0, w0, #0, #1
+
+0000000000400380 <stdout>:
+  400380:	4f445453 	shl	v19.2d, v2.2d, #4
+  400384:	 	.inst	0x533b5455 ; undefined
+
+0000000000400387 <stderr>:
+  400387:	45445453 	ssubwt	z19.h, z2.h, z4.b
+  40038b:	 	.inst	0x483b5252 ; undefined
+
+000000000040038e <message>:
+  40038e:	6c6c6548 	ldnp	d8, d25, [x10, #-320]
+  400392:	57202c6f 	.inst	0x57202c6f ; undefined
+  400396:	646c726f 	.inst	0x646c726f ; undefined
+  40039a:	Address 0x40039a is out of bounds.
+
+
+Disassembly of section .data:
+
+00000000004103a0 <heap>:
+	...
+
+00000000004113a0 <heap_end>:
+	...
+
+00000000004113b0 <stack>:
+	...
+
+00000000004123b0 <stack_end>:
+	...
