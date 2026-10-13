@@ -15,7 +15,6 @@ _start_pages:
 	ldr x1, [sp]
 	str x1, [x0], #0x10
 	add x1, sp, #8
-	ldr x1, [x1]
 	str x1, [x0]
 	ret
 _set_pages:

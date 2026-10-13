@@ -14,6 +14,14 @@ opening:
 writing:
 	.ascii "WRITING... \n"
 	writing_len=.-writing
+closing:
+	.ascii "CLOSING... \n\0"
+	closing_len=.-closing
+argv_too_small:
+	.ascii "ARGV TOO SMALL\n\0"
+	argv_too_small_len=.-argv_too_small
+argv_too_big:
+	
 .section .data
 buf:
 	.space 1024
@@ -127,6 +135,21 @@ main:
 	bl _set_heap
 	str x0, [sp, #0x20]
 	//calling write
+	bl _set_stack
+	adr x0, write
+	bl call
+
+	//write 5
+
+	//setting args
+	bl _set_heap
+	mov x0, _STDOUT
+	str x0, [sp], #0x10
+	ldr x0, =closing
+	str x0, [sp], #0x10
+	ldr x0, =closing_len
+	str x0, [sp]
+	//calling wrote
 	bl _set_stack
 	adr x0, write
 	bl call

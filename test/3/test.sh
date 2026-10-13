@@ -4,7 +4,7 @@ if [ $? -ne 0 ]; then
 	echo "TEST 3 FAILED!"
 	exit $?
 fi
-./test/3/test "test/3/test.txt"&>test/3/test.out
+./test/3/test "/home/jyodannmeansu/Documents/asm/test/3/test.txt"&>test/3/test.out
 if [ "$(cat test/3/test.expected)" == "$(cat test/3/test.out)" ]; then
 	echo "TEST 3 PASSED!"
 	exit 0
